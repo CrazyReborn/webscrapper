@@ -5,14 +5,17 @@ async function scrapeProduct(url) {
   const page = await browser.newPage();
   await page.goto(url);
 
-  const el = await page.$$('li[class="results__list-container-item"]');
-  //const txt = await el.getProperty('content');
-  //const rawTxt = await txt.jsonValue();
-
-  console.log(Array.from(el).length);
-
+  const listItemsInitial = await page.$$('a[class="offer-details__title-link"]');
+  const listItemsArray = Array.from(listItemsInitial);
+  for (listItem of listItemsArray) {
+    const linkUnformatted = await listItem.getProperty('href');
+    const jobTitle = await listItem.getProperty('textContent');
+    console.log({ 
+      'link': await linkUnformatted.jsonValue(),
+      'job title': await jobTitle.jsonValue(),
+    });
+  }
   browser.close();
-
 }
 
 scrapeProduct('https://www.pracuj.pl/praca');
